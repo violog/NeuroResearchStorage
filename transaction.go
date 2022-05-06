@@ -14,7 +14,7 @@ import (
 // Every tx must contain an attached file: how to do that?
 // Remember file's name, read bytes, then write it when destination is reached
 type Transaction struct {
-	hash     []byte
+	hash     [32]byte
 	title    string
 	filename string
 	content  []byte
@@ -62,7 +62,6 @@ func createTransaction(t, fname string, n int) (tx Transaction) {
 	}
 	tx.filename = fname
 	tx.nonce = n
-	tmpHash := sha256.New()
 	info, e := os.Stat(fname)
 	if info.Size() > attachmentSizeLimit {
 		throwRequiredFoundError(creationFailure+"file size limit exceeded", lt, attachmentSizeLimit, int(info.Size()))
@@ -74,8 +73,7 @@ func createTransaction(t, fname string, n int) (tx Transaction) {
 	txDataHashed := []byte(tx.title)
 	txDataHashed = append(txDataHashed, []byte(tx.filename)...)
 	txDataHashed = append(txDataHashed, []byte(strconv.Itoa(n))...)
-	tmpHash.Write(append(txDataHashed, tx.content...))
-	tx.hash = tmpHash.Sum(nil)
+	tx.hash = sha256.Sum256(append(txDataHashed, tx.content...))
 	return
 }
 
