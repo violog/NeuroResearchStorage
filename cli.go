@@ -78,14 +78,11 @@ func cli(bc *blockchain.Blockchain) {
 				var hash string
 				fmt.Print("hashPrev: ")
 				fmt.Scan(&hash)
-				if !regexp.MustCompile(`[:xdigit:]{64}`).MatchString(hash) {
+				if !regexp.MustCompile(`[[:xdigit:]]{64}`).MatchString(hash) {
 					fmt.Println(invalidHashError)
 					continue
 				}
-				var hashByte [32]byte = strTo32Byte(hash)
-				fmt.Println([]byte(hash))
-				fmt.Println(hashByte)
-				block, err = addPendingBlock(hashByte)
+				block, err = addPendingBlock(strTo32Byte(hash))
 				if err != nil {
 					fmt.Println(err)
 					continue
@@ -179,12 +176,12 @@ func cli(bc *blockchain.Blockchain) {
 		case "v", "validate":
 			n := bc.ValidateChain()
 			if n != -1 {
-				fmt.Printf("Chain is invalid on block height %v. ", n)
+				fmt.Printf("Chain is invalid on block height %v. ", n+1)
 				if readAnswer("Print those blocks?") {
 					fmt.Println("Previous block:")
-					(*bc)[n-1].Print(false)
-					fmt.Println("Next block with invalid hashPrev:")
 					(*bc)[n].Print(false)
+					fmt.Println("Next block with invalid hashPrev:")
+					(*bc)[n+1].Print(false)
 				}
 				continue
 			}
