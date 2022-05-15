@@ -44,7 +44,7 @@ func (bc *Blockchain) ValidateBlock(b *Block) bool {
 
 func (bc *Blockchain) ValidateChain() (invalidBlockNumber int) {
 	for i := range (*bc)[1:] {
-		if (*bc)[i].HashPrev != (*bc)[i-1].ID {
+		if (*bc)[i+1].HashPrev != (*bc)[i].ID {
 			return i
 		}
 	}
