@@ -1,3 +1,4 @@
+// Функционал интерфейса командной строки
 package main
 
 import (
@@ -8,14 +9,20 @@ import (
 	"regexp"
 )
 
+// cli Интерфейс командной строки, принимающий на вход инициализированный блокчейн
 func cli(bc *blockchain.Blockchain) {
+	// Инициализация переменных
 	const mempoolCapacity = 16
 	var cmd string
+	// Параметры валидации перед присоединением блока и подробного вывода
 	var validateBeforeConnecting = true
 	var verbose = false
+	// Неподтверждённые транзакции и блоки
 	pendingTxs := make([]*blockchain.Transaction, 0, mempoolCapacity)
 	pendingBlocks := make([]*blockchain.Block, 0, mempoolCapacity)
 
+	// Замыкания в данном контексте удобнее функций утилит
+	// Добавить транзакцию в мемпул
 	addPendingTx := func(tx *blockchain.Transaction) error {
 		if tx == nil {
 			return errors.New("Attempt to add empty transaction")
@@ -29,6 +36,7 @@ func cli(bc *blockchain.Blockchain) {
 		return nil
 	}
 
+	// Добавить блок в условный мемпул, где находятся неподтверждённые блоки
 	addPendingBlock := func(hashPrev [32]byte) (*blockchain.Block, error) {
 		block, err := blockchain.CreateBlock(hashPrev, pendingTxs)
 		if err != nil {
@@ -39,6 +47,7 @@ func cli(bc *blockchain.Blockchain) {
 		return block, nil
 	}
 
+	// Присоединить все блоки из мемпула
 	connectPendingBlocks := func() (connected int, err error) {
 		if validateBeforeConnecting {
 			for i, b := range pendingBlocks {

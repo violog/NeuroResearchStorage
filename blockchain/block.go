@@ -7,11 +7,12 @@ import (
 )
 
 type Block struct {
-	ID       [32]byte
-	HashPrev [32]byte
-	TxList   []*Transaction
+	ID       [32]byte       // Хеш-значение полей блока
+	HashPrev [32]byte       // Хеш-значение предыдущего блока
+	TxList   []*Transaction // Список транзакций
 }
 
+// CreateBlock Создать блок; его хеш-значения получается из конкатенации хеш-значений входящих в него транзакций
 func CreateBlock(hashPrev [32]byte, txList []*Transaction) (b *Block, err error) {
 	if len(txList) == 0 {
 		return nil, errors.New("Failed to create block: no transactions to insert")
@@ -28,6 +29,8 @@ func CreateBlock(hashPrev [32]byte, txList []*Transaction) (b *Block, err error)
 	return
 }
 
+// toString Конвертация в строку; verbose указывает, нужен ли подробный вывод
+// Пришлось дублировать код из transaction.go для более читаемого вывода, проставив отступы
 func (b *Block) toString(verbose bool) string {
 	result := fmt.Sprintf(`
 {

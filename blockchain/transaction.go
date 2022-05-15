@@ -12,15 +12,16 @@ import (
 )
 
 type Transaction struct {
-	hash     [32]byte
-	title    string
-	filename string
-	content  []byte
-	nonce    int
+	hash     [32]byte // хеш-значение SHA-256 от полей транзакции
+	title    string   // заголовок научной работы
+	filename string   // имя файла материалов
+	content  []byte   // содержимое файла
+	nonce    int      // защита от дублирования
 }
 
+// CreateTransaction Создание транзакции; проходит проверки на корректность названия, размера и расширения файла
 func CreateTransaction(t, fname string, n int) (tx *Transaction, err error) {
-	t = strings.Join(strings.Fields(t), " ") // strip whitespace
+	t = strings.Join(strings.Fields(t), " ")
 	// storing as constants to make changes in a single place
 	const (
 		attachmentSizeLimit = 1073741824
@@ -72,8 +73,8 @@ func (tx *Transaction) toString() (res string) {
 }`, tx.hash, tx.title, tx.filename, tx.nonce)
 }
 
+// Hash Хеш от конкатенации полей транзакции в порядке "название работы - имя файла - нонс - содержимое файла"
 func (tx *Transaction) Hash() [32]byte {
-	// Hash byte seq of data in order: title, filename, nonce, content
 	byteNonce := []byte(strconv.Itoa(tx.nonce))
 	txDataHashed := make([]byte, len(tx.title)+len(tx.filename)+len(tx.content)+len(byteNonce))
 	for i, v := range []byte(tx.title) {

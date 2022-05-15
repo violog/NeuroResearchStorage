@@ -1,3 +1,4 @@
+// Функции-утилиты, используемые в CLI
 package main
 
 import (
@@ -9,6 +10,7 @@ import (
 	"strconv"
 )
 
+// getTxFromUserInput Создание транзакции из консоли пользователя
 func getTxFromUserInput() (*blockchain.Transaction, error) {
 	var t, fname string
 	var n int
@@ -30,6 +32,7 @@ func getTxFromUserInput() (*blockchain.Transaction, error) {
 	return blockchain.CreateTransaction(t, fname, n)
 }
 
+// readAnswer Считать ответ: да/нет
 func readAnswer(question string) bool {
 	var ans string
 	for {
@@ -45,6 +48,7 @@ func readAnswer(question string) bool {
 	}
 }
 
+// readLine Считать строку до символа \n вместо слова
 func readLine(r io.Reader) (string, error) {
 	reader := bufio.NewReader(r)
 	input, err := reader.ReadString('\n')
@@ -77,6 +81,7 @@ w, wipe - wipe pending transactions or blocks
 `)
 }
 
+// strTo32Byte Конвертация строки в массив длиной 32 байта - нужно для проверки ввода хеша с консоли
 func strTo32Byte(s string) [32]byte {
 	var result [32]byte
 	hexToDec := func(hex byte) byte {
